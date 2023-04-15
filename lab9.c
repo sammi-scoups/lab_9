@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 // RecordType
 struct RecordType
@@ -6,18 +8,20 @@ struct RecordType
 	int		id;
 	char	name;
 	int		order; 
+	int 	next;
 };
 
 // Fill out this structure
 struct HashType
 {
+	struct RecordType *hello;
 
 };
 
 // Compute the hash function
-int hash(int x)
+int hash(int x, int tableSize)
 {
-
+	return (x%tableSize); 
 }
 
 // parses input file to an integer array
@@ -57,6 +61,31 @@ int parseData(char* inputFileName, struct RecordType** ppData)
 	return dataSz;
 }
 
+void insertRecord(struct HashType *hashTable, struct RecordType *record, int tableSize)
+{
+	int a = record->id;
+    // call the hash function to get the index
+    // if the RecordType at that index is NULL
+        // set 'record' equal to the HashType pointer in the table at index
+    // else
+        // traverse to the end of the linkedlist and add 'record' to the end of it
+	
+	int index = hash(a,tableSize);
+	struct RecordType *curr2 = hashTable[index].hello;
+	if (curr2==NULL)
+	{
+		hashTable[index].hello = record;
+	} else 
+	{
+		while(curr2 -> next != NULL)
+		{
+			curr2 = curr2->next;
+		}
+		curr2->next = record;
+	}
+
+}
+
 // prints the records
 void printRecords(struct RecordType pData[], int dataSz)
 {
@@ -73,13 +102,28 @@ void printRecords(struct RecordType pData[], int dataSz)
 // skip the indices which are free
 // the output will be in the format:
 // index x -> id, name, order -> id, name, order ....
-void displayRecordsInHash(struct HashType *pHashArray, int hashSz)
+void displayRecordsInHash(struct HashType *hashTable, int tableSize)
 {
 	int i;
 
-	for (i=0;i<hashSz;++i)
+	for (i=0; i < tableSize; ++i)
 	{
-		// if index is occupied with any records, print all
+		printf("Index %d ->", i);
+		struct RecordType *curr = hashTable[i].hello;
+		if (curr != NULL)
+		{
+			while(curr != NULL)
+			{
+				printf("%d, %c, %d", curr->id,curr->name,curr->order);
+				if (curr->next == NULL)
+				{
+					printf(" ---> NULL");
+				}
+				curr = curr->next;
+			}
+			printf("\n");
+		}
+			// if index is occupied with any records, print all
 	}
 }
 
@@ -91,4 +135,6 @@ int main(void)
 	recordSz = parseData("input.txt", &pRecords);
 	printRecords(pRecords, recordSz);
 	// Your hash implementation
+
+	free (pRecords);
 }
