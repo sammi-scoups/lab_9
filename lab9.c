@@ -8,7 +8,7 @@ struct RecordType
 	int		id;
 	char	name;
 	int		order; 
-	int 	next;
+	struct RecordType *nxt;;
 };
 
 // Fill out this structure
@@ -75,13 +75,14 @@ void insertRecord(struct HashType *hashTable, struct RecordType *record, int tab
 	if (curr2==NULL)
 	{
 		hashTable[index].hello = record;
+		hashTable[index].hello->nxt = NULL;
 	} else 
 	{
-		while(curr2 -> next != NULL)
+		while(curr2->nxt != NULL)
 		{
-			curr2 = curr2->next;
+			curr2 = curr2->nxt;
 		}
-		curr2->next = record;
+		curr2->nxt = record;
 	}
 
 }
@@ -115,11 +116,11 @@ void displayRecordsInHash(struct HashType *hashTable, int tableSize)
 			while(curr != NULL)
 			{
 				printf("%d, %c, %d", curr->id,curr->name,curr->order);
-				if (curr->next == NULL)
+				if (curr->nxt == NULL)
 				{
 					printf(" ---> NULL");
 				}
-				curr = curr->next;
+				curr = curr->nxt;
 			}
 			printf("\n");
 		}
@@ -134,6 +135,18 @@ int main(void)
 
 	recordSz = parseData("input.txt", &pRecords);
 	printRecords(pRecords, recordSz);
+	int hashtableSz = 11;
+	struct HashType *table = malloc(sizeof(struct HashType)* hashtableSz); 
+	for (int a =0; a < hashtableSz; a++)
+	{
+		table[a].hello = NULL;
+	}
+	for (int b = 0; b < recordSz; b++)
+	{
+		insertRecord(table, &pRecords[b],hashtableSz);
+		
+	}
+	displayRecordsInHash(table,hashtableSz);
 	// Your hash implementation
 
 	free (pRecords);
